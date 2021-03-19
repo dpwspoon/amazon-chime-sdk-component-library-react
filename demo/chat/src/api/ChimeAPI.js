@@ -3,8 +3,8 @@
 // Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Auth } from '@aws-amplify/auth';
 import appConfig from '../Config';
+import { getAwsCredentials} from '../providers/AuthProvider';
 // eslint-disable-next-line no-unused-vars
 const Chime = require('aws-sdk/clients/chime');
 
@@ -15,10 +15,10 @@ const appInstanceUserArnHeader = 'x-amz-chime-bearer';
 
 // Setup Chime Client
 async function chimeClient() {
-  const creds = await Auth.currentCredentials();
+  // const creds = await Auth.currentCredentials();
   const chime = new Chime({
     region: 'us-east-1',
-    credentials: await Auth.essentialCredentials(creds)
+    credentials: getAwsCredentials(),
   });
   return chime;
 }

@@ -11,3 +11,4 @@ verdaccio_app
 demo/*/yalc.lock
 demo/*/.yalc
 demo/chat/src/Config.js
+.idea

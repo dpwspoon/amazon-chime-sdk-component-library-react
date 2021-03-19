@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AWS from 'aws-sdk';
-import Auth from '@aws-amplify/auth';
+import { getAwsCredentials } from '../providers/AuthProvider';
 
 /**
  * @class IdentityService
@@ -50,12 +50,12 @@ export class IdentityService {
   }
 
   async setupClient() {
-    const creds = await Auth.currentCredentials();
+    const creds = getAwsCredentials();
     if (!creds) return;
 
     this._identityClient = new AWS.CognitoIdentityServiceProvider({
       region: this._region,
-      credentials: Auth.essentialCredentials(creds)
+      credentials: creds
     });
   }
 }

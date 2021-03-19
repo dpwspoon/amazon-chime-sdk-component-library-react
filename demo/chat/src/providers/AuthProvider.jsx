@@ -6,9 +6,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Auth } from '@aws-amplify/auth';
 import { useNotificationDispatch } from 'amazon-chime-sdk-component-library-react';
+import appConfig from '../Config';
+import { Credentials } from 'aws-sdk';
+
+// proxy for when using Cognito vs Credential Exchange Service
+let credentials;
+function getAwsCredentials() {
+  return credentials;
+}
 
 const AuthContext = createContext();
-
 const AuthProvider = ({ children }) => {
   const notificationDispatch = useNotificationDispatch();
   // Member
@@ -72,18 +79,17 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const getAwsCredentials = async () => {
-    // Set up AWS credentials
+  const getAwsCredentialsFromCognito = async () => {
     const creds = await Auth.currentCredentials();
     const essentialCreds = await Auth.essentialCredentials(creds);
     setAwsCredentials(essentialCreds);
-
+    credentials = essentialCreds;
     return essentialCreds;
   };
 
-  const setAuthenticatedUser = () => {
+  const setAuthenticatedUserFromCognito = () => {
     Auth.currentUserInfo()
-      .then((curUser) => {
+      .then(curUser => {
         setMember({ username: curUser.username, userId: curUser.id });
         if (curUser.attributes?.profile === 'none') {
           updateUserAttributes(curUser.id);
@@ -105,28 +111,62 @@ const AuthProvider = ({ children }) => {
       .catch((err) => {
         console.log(`Failed to set authenticated user! ${err}`);
       });
+    getAwsCredentialsFromCognito();
+  };
 
-    getAwsCredentials();
+  const setAuthenticatedUserFromCredentialExchangeService = (response) => {
+    console.log(response);
+    setMember({
+      username: response.ChimeDisplayName,
+      userId: response.ChimeUserId
+    });
+    const stsCredentials = response.ChimeCredentials;
+    updateUserAttributes(response.ChimeUserId);
+    credentials = new Credentials(stsCredentials.AccessKeyId, stsCredentials.SecretAccessKey, stsCredentials.SessionToken);
+    setAwsCredentials(stsCredentials);
+
+    setIsAuthenticated(true);
   };
 
   const userSignIn = (username, password) => {
-    Auth.signIn({ username, password })
-      .then(setAuthenticatedUser)
-      .catch((err) => {
-        console.log(err);
-        notificationDispatch({
-          type: 0,
-          payload: {
-            message: 'Your username and/or password is invalid!',
-            severity: 'error',
-          },
+    if (appConfig.useCredentialExchangeService) {
+      fetch(appConfig.credentialExchangeServiceApiGatewayInvokeUrl, {
+        method: 'POST',
+        credentials: 'include',
+        headers: new Headers({
+          Authorization: `Basic ${btoa(`${username}:${password}`)}`
+        })
+      }).then(response => response.json())
+        .then(data => setAuthenticatedUserFromCredentialExchangeService(data))
+        .catch(err => {
+          console.log(err);
+          notificationDispatch({
+            type: 0,
+            payload: {
+              message: 'Your username and/or password is invalid!',
+              severity: 'error',
+            },
+          });
         });
-      });
+    } else { //default to Cogntio via Amplify
+      Auth.signIn({ username, password })
+        .then(setAuthenticatedUserFromCognito)
+        .catch((err) => {
+          console.log(err);
+          notificationDispatch({
+            type: 0,
+            payload: {
+              message: 'Your username and/or password is invalid!',
+              severity: 'error',
+            },
+          });
+        });
+    }
   };
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
-      .then(setAuthenticatedUser)
+      .then(setAuthenticatedUserFromCognito)
       .catch((err) => {
         console.log(err);
         setIsAuthenticated(false);
@@ -159,4 +199,4 @@ const useAuthContext = () => {
   return context;
 };
 
-export { AuthProvider, useAuthContext };
+export { AuthProvider, useAuthContext, getAwsCredentials };
