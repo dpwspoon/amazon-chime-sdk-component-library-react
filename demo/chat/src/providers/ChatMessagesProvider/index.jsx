@@ -56,7 +56,7 @@ const MessagingProvider = ({ children }) => {
     if (!isAuthenticated || !awsCredentials) return;
 
     // Start messaging service
-    console.log('Calling messaging disperse');
+    console.log('Calling messaging disperse ' + JSON.stringify(awsCredentials));
     messagingService.connect(awsCredentials);
 
     return () => {

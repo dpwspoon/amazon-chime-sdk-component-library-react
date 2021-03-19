@@ -17,12 +17,25 @@ This doc is intended for developers interested in the Amazon Chime Chat SDK, eve
     ```aws --version```
 2. Obtain AWS credentials for your AWS account
 3. Set the AWS credentials in the AWS CLI - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.
-4. Deploy included Cloudformation template via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
+4. (Optional) The demo allows login via both Cognito OR a credential exchange service.  If you prefer not to use Cognito, then for demo purposes
+the credential exchange service uses [HTTP Basic Auth](https://tools.ietf.org/html/rfc7617) (username password) with hardcoded
+credentials in the lambda mapping. In production these credentials would be validated from your IDP.  If you would like to
+customize the usernames or passwords open [src/backend/serverless/template.yaml](./src/backend/serverless/template.yaml) and edit the following;
+where the format is `username:password` mapped to `new User(${User_UUID}. ${User_Display_Name}`:
+
+```
+ // TODO: Optionally modify user name and passwords that are hardcoded for demo purposes.  In production remove this code with your 
+ // own credential validation
+ const validUsers = {
+   'william@example.com:changeit1': new User('uuid123', 'bill'),
+   'fran@example.com:changeit2': new User('uuidABC', 'fran')
+```
+5. Deploy included Cloudformation template via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
     
     or
     
-    ```aws cloudformation create-stack --stack-name <STACKNAME> --template-body file://src/backend/serverless/template.yaml --parameters ParameterKey=DemoName,ParameterValue=<NAME_OF_DEMO> --capabilities CAPABILITY_NAMED_IAM```
-5. Verify and record outputs via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
+    ```aws cloudformation create-stack --stack-name <STACKNAME> --template-body file://src/backend/serverless/template.yaml --parameters ParameterKey=DemoName,ParameterValue=<NAME_OF_DEMO> --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND```
+6. Verify and record outputs via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
     
     or
 
@@ -38,8 +51,24 @@ This doc is intended for developers interested in the Amazon Chime Chat SDK, eve
  previously created resources.
 6. In the root directory `demo/chat`, run `npm start` to start the client
 7. Open https://0.0.0.0:9000/ in your browser
+8. By default, the demo uses Amazon Cognito User Pools to manage users.  Alternatively, you can run a small lambda that exchanges your IDPs
+ tokens or custom credentials for AWS Chime credentials scoped to individual users.  If you prefer to use the default Cognito flow
+ continue with [Cognito User Pools - Register a New User](#cognito-user-pools-register-a-new-user).  If you prefer to use the credential 
+ exchange service set `useCredentialExchangeService` to `true` in `src/Config.js`.  Your browser should reload and skip ahead to
+ [Credential Exchange Service: Login](#Credential-Exchange-Service-Login).
 
-### Register a New User
+### Choosing Auth Setup (Cognito User Pools or Credential Exchange Service)
+
+By default, the demo uses Amazon Cognito User Pools to manage users.  Alternatively, you can run a small lambda that exchanges your IDPs
+tokens or custom credentials for AWS Chime credentials scoped to individual users.  If you prefer to use the default Cognito flow
+continue with [Cognito User Pools - Register a New User](#cognito-user-pools-register-a-new-user).  If you prefer to run a small
+credential exchange service continue with [STS AssumeRole Credential Exchange Service](#sts-assumerole-launch-credential-exchange-service).
+
+Note: Not demoed here is using Cognito Identity Pools as a way of exchanging standards based token (OIDC, SAML, Public Identity Providers,
+and more) for AWS Chime credentials scoped to individual users.  Find more info on this
+[here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html).
+
+#### Cognito User Pools: Register a New User
 
 New users can register through the Amazon Chime Sample App.
 
@@ -48,7 +77,7 @@ New users can register through the Amazon Chime Sample App.
 3. Choose **Register**
 4. Before this user can login, their account must be confirmed. The quickest way is to follow the steps under **Confirming a New Cognito User as an Account Admin**
 
-### **Confirming a New Cognito User as an Account Admin**
+#### Cognito User Pools: **Confirming a New Cognito User as an Account Admin**
 
 1. Go to the [Amazon Cognito console](https://console.aws.amazon.com/cognito/home)
 2. Choose **Manage User Pools**
@@ -58,10 +87,29 @@ New users can register through the Amazon Chime Sample App.
 6. Choose **Confirm user.**
 7. Now that user should be able to log in.
 
-### **Logging In**
+#### Cognito User Pools: **Logging In**
 
-1. Open a browser of your choice and navigate to [http://localhost:9000](http://localhost:9000/)to access the client
+1. Open a browser of your choice and navigate to [http://localhost:9000](http://localhost:9000/) to access the client
 2. Provide the username and password of the desired user.
+3. Choose Login
+
+Skip ahead to [Creating a Channel](#creating-a-channel)
+
+#### Credential Exchange Service: Login
+
+1. Open a browser of your choice and navigate to [http://localhost:9000](http://localhost:9000/) to access the client
+2. Login by provide a username and password that matches one of the hardcoded user names and passwords in
+ [src/backend/serverless/template.yaml](./src/backend/serverless/template.yaml).  If you did not modify this from the above steps, a
+ username would be `fran@example.com` and password would be `changeit2`.
+
+```
+ // TODO: Optionally modify user name and passwords that are hardcoded for demo purposes.  In production remove this code with your 
+ // own credential validation
+ const validUsers = {
+   'william@example.com:changeit1': new User('uuid123', 'bill'),
+   'fran@example.com:changeit2': new User('uuidABC', 'fran')
+```
+
 3. Choose Login
 
 ### Creating a Channel

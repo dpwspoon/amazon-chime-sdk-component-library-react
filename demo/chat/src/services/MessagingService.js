@@ -14,6 +14,7 @@ import {
 
 import { getMessagingSessionEndpoint, createMemberArn } from '../api/ChimeAPI';
 import appConfig from '../Config';
+import {AuthProvider} from "../providers/AuthProvider";
 
 class MessagingService {
   constructor(member) {

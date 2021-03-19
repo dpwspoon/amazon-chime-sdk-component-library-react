@@ -6,9 +6,31 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Auth } from '@aws-amplify/auth';
 import { useNotificationDispatch } from 'amazon-chime-sdk-component-library-react';
+import appConfig from '../Config';
+import {Credentials} from "aws-sdk";
+
+class CredsProxy {
+
+  setAwsCredentials(creds) {
+    this.creds = creds;
+  }
+
+  AwsCredentials() {
+    if (appConfig.useCredentialExchangeService) {
+      return new Credentials(
+          this.creds.AccessKeyId,
+          this.creds.SecretAccessKey,
+          this.creds.SessionToken);
+    } else {
+      console.log("TODO / Clean up for backwards compat with cognito");
+      return null;
+    }
+  }
+}
+
+const authProxy = new CredsProxy();
 
 const AuthContext = createContext();
-
 const AuthProvider = ({ children }) => {
   const notificationDispatch = useNotificationDispatch();
   // Member
@@ -19,6 +41,8 @@ const AuthProvider = ({ children }) => {
   // Auth state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [awsCredentials, setAwsCredentials] = useState('');
+
+  let stsCredentials = null;
 
   const userSignOut = async () => {
     try {
@@ -74,11 +98,16 @@ const AuthProvider = ({ children }) => {
 
   const getAwsCredentials = async () => {
     // Set up AWS credentials
-    const creds = await Auth.currentCredentials();
-    const essentialCreds = await Auth.essentialCredentials(creds);
-    setAwsCredentials(essentialCreds);
-
-    return essentialCreds;
+    if (appConfig.useCredentialExchangeService) {
+      // TODO add credential refresh
+      setAwsCredentials(stsCredentials);
+      return stsCredentials;
+    } else {
+      const creds = await Auth.currentCredentials();
+      const essentialCreds = await Auth.essentialCredentials(creds);
+      setAwsCredentials(essentialCreds);
+      return essentialCreds;
+    }
   };
 
   const setAuthenticatedUser = () => {
@@ -109,19 +138,54 @@ const AuthProvider = ({ children }) => {
     getAwsCredentials();
   };
 
+  const setAuthenticatedUserFromCredentialService = (response) => {
+    console.log(response);
+    setMember({
+      username: response.ChimeDisplayName,
+      userId: response.ChimeUserId
+    });
+    stsCredentials = response.ChimeCredentials;
+    updateUserAttributes(response.ChimeUserId);
+    authProxy.setAwsCredentials(stsCredentials);
+    setAwsCredentials(stsCredentials);
+
+    setIsAuthenticated(true);
+  };
+
   const userSignIn = (username, password) => {
-    Auth.signIn({ username, password })
-      .then(setAuthenticatedUser)
-      .catch((err) => {
-        console.log(err);
-        notificationDispatch({
-          type: 0,
-          payload: {
-            message: 'Your username and/or password is invalid!',
-            severity: 'error',
-          },
+    if (appConfig.useCredentialExchangeService) {
+      fetch(appConfig.credentialExchangeServiceApiGatewayInvokeUrl, {
+        method: 'POST',
+        credentials: 'include',
+        headers: new Headers({
+          Authorization: `Basic ${btoa(`${username}:${password}`)}`
+        })
+      }).then(response => response.json())
+        .then(data => setAuthenticatedUserFromCredentialService(data))
+        .catch(err => {
+          console.log(err);
+          notificationDispatch({
+            type: 0,
+            payload: {
+              message: 'Your username and/or password is invalid!',
+              severity: 'error',
+            },
+          });
         });
-      });
+    } else { //default to Cogntio via Amplify
+      Auth.signIn({ username, password })
+        .then(setAuthenticatedUser)
+        .catch((err) => {
+          console.log(err);
+          notificationDispatch({
+            type: 0,
+            payload: {
+              message: 'Your username and/or password is invalid!',
+              severity: 'error',
+            },
+          });
+        });
+    }
   };
 
   useEffect(() => {
@@ -159,4 +223,4 @@ const useAuthContext = () => {
   return context;
 };
 
-export { AuthProvider, useAuthContext };
+export { AuthProvider, useAuthContext, authProxy };

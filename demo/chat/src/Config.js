@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 const appConfig = {
+  useCredentialExchangeService: false,
+  credentialExchangeServiceApiGatewayInvokeUrl: '',
   cognitoUserPoolId: '',
   cognitoAppClientId: '',
   cognitoIdentityPoolId: '',
