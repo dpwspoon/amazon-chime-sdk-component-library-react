@@ -13,17 +13,19 @@ export class IdentityService {
    * @param {region}  region AWS region.
    * @param {userPoolId} userPoolId Cognito User Pool Id.
    */
-  constructor(region, userPoolId) {
+  constructor(region, userPoolId, appInstanceArn, useCredentialExchangeService) {
     this._userPoolId = userPoolId;
     this._region = region;
+    this._appInstanceArn = appInstanceArn;
+    this._useCognito = !useCredentialExchangeService;
   }
 
   async getUsers(limit = 60) {
     try {
       const users = await this._identityClient
-        .listUsers({
-          Limit: limit,
-          UserPoolId: this._userPoolId
+        .listAppInstanceUsers({
+          AppInstanceArn: this._appInstanceArn,
+          // UserPoolId: this._userPoolId
         })
         .promise();
 
@@ -53,7 +55,7 @@ export class IdentityService {
     const creds = getAwsCredentials();
     if (!creds) return;
 
-    this._identityClient = new AWS.CognitoIdentityServiceProvider({
+    this._identityClient = new AWS.Chime({
       region: this._region,
       credentials: creds
     });

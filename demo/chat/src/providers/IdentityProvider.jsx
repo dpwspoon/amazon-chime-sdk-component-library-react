@@ -13,7 +13,7 @@ const IdentityServiceContext = createContext(null);
 export const IdentityProvider = ({ children }) => {
   const { isAuthenticated } = useAuthContext();
   const [identityService] = useState(
-    () => new IdentityService(appConfig.region, appConfig.cognitoUserPoolId)
+    () => new IdentityService(appConfig.region, appConfig.cognitoUserPoolId, appConfig.appInstanceArn, appConfig.useCredentialExchangeService)
   );
 
   useEffect(() => {

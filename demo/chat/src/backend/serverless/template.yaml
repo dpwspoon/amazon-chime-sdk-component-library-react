@@ -362,7 +362,7 @@ Resources:
                   - "chime:ListChannelBans"
                   - "chime:DeleteChannelBan"
                 Resource:
-                  - !Join ['', [!GetAtt TriggerChimeAppInstanceLambda.AppInstanceArn, '/user/${cognito-identity.amazonaws.com:sub}']]
+                  - !Join ['', [!GetAtt TriggerChimeAppInstanceLambda.AppInstanceArn, '/user/${PrincipalTags:sub}']]
                   - !Join ['', [!GetAtt TriggerChimeAppInstanceLambda.AppInstanceArn, '/channel/*']]
 
   # Assigns the roles to the Identity Pool
