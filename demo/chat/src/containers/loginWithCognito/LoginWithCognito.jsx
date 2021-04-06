@@ -10,9 +10,9 @@ import {
   Heading,
 } from 'amazon-chime-sdk-component-library-react';
 
-import './login.css';
+import './LoginWithCognito.css';
 
-const Login = (props) => {
+const LoginWithCognito = (props) => {
   const [userName, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login, register } = props;
@@ -41,7 +41,7 @@ const Login = (props) => {
         css="font-size: 1.1875rem !important; line-height: 4rem !important;"
         level="1"
       >
-        Sign in
+        Sign in with Cognito
       </Heading>
       <Heading
         css="font-size: 0.875rem !important; line-height: 3rem !important;"
@@ -83,4 +83,4 @@ const Login = (props) => {
   );
 };
 
-export default Login;
+export default LoginWithCognito;

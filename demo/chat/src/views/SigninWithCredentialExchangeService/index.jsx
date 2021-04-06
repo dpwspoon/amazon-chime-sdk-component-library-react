@@ -5,10 +5,10 @@
 import React from 'react';
 import { Heading, Grid, Cell } from 'amazon-chime-sdk-component-library-react';
 import { useTheme } from 'styled-components';
-import Login from '../../containers/login/Login';
+import LoginWithCognito from '../../containers/loginWithCredentialExchangeService/LoginWithCredentialExchangeService';
 import { useAuthContext } from '../../providers/AuthProvider';
 
-const Signin = () => {
+const SigninWithCredentialExchangeService = () => {
   const { userSignIn, userSignUp } = useAuthContext();
   const currentTheme = useTheme();
 
@@ -33,10 +33,10 @@ const Signin = () => {
         </Heading>
       </Cell>
       <Cell gridArea="main">
-        <Login register={userSignUp} login={userSignIn} />
+        <LoginWithCognito register={userSignUp} login={userSignIn} />
       </Cell>
     </Grid>
   );
 };
 
-export default Signin;
+export default SigninWithCredentialExchangeService;

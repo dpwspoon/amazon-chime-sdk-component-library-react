@@ -16,7 +16,8 @@ import Notifications from './containers/Notifications';
 import './Chat.css';
 import { AppStateProvider, useAppState } from './providers/AppStateProvider';
 import { AuthProvider } from './providers/AuthProvider';
-import Signin from './views/Signin';
+import SigninWithCognito from './views/SigninWithCognito';
+import SigninWithCredentialExchangeService from './views/SigninWithCredentialExchangeService';
 import Channels from './views/Channels';
 import { MessagingProvider } from './providers/ChatMessagesProvider';
 import { UserPermissionProvider } from './providers/UserPermissionProvider';
@@ -40,7 +41,8 @@ const Chat = () => (
                     </UserPermissionProvider>
                   </MessagingProvider>
                 </Route>
-                <Route exact path={routes.SIGNIN} component={Signin} />
+                <Route exact path={routes.SIGNIN_WITH_COGNITO} component={SigninWithCognito} />
+                <Route exact path={routes.SIGNIN_WITH_CREDENTIAL_EXCHANGE_SERVICE} component={SigninWithCredentialExchangeService} />
               </Switch>
             </IdentityProvider>
           </AuthProvider>
