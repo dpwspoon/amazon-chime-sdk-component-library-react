@@ -1,0 +1,12 @@
+// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+const appConfig = {
+  cognitoUserPoolId: 'us-east-1_VTF3CDn8T',
+  cognitoAppClientId: '441scekni6s0h9ci0greqvghd3',
+  cognitoIdentityPoolId: 'us-east-1:1f175dbd-bbe5-43ce-875f-be7075f70e57',
+  appInstanceArn: 'arn:aws:chime:us-east-1:770433969263:app-instance/18d55885-4357-4292-9999-8480c4b45cb1',
+  region: 'us-east-1',
+  attachments_s3_bucket_name: 'arn:aws:s3:::km-chime-sdk-demo-chatattachmentsbucket-18vqarhsqxk7t'
+};
+export default appConfig;
