@@ -80,8 +80,10 @@ async function sendChannelMessage(
   console.log('sendChannelMessage called ' + appConfig.activeChannel);
 
   // console.log(member);
-  // console.log(JSON.stringify(member));
-  const memberUUID = getIdFromArn(member);
+    // console.log(JSON.stringify(member));
+  console.log("KMKMKKM activeUserId = " + appConfig.activeUserId);
+  //const memberUUID = getIdFromArn(appConfig.activeUserId);
+  const memberUUID = appConfig.activeUserId;
 
   const params = {
     ChannelArn:  appConfig.activeChannel,
@@ -95,6 +97,7 @@ async function sendChannelMessage(
 
   const request = (await chimeClient()).sendChannelMessage(params);
   request.on('build', function() {
+  //request.httpRequest.headers[appInstanceUserArnHeader] = member;
     request.httpRequest.headers[appInstanceUserArnHeader] = createMemberArn(
       memberUUID
     );

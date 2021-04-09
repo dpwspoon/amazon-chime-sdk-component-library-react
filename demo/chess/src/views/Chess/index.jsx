@@ -38,6 +38,7 @@ const Chess = () => {
   } = useChatMessagingState();
   console.log("KMKMKMK onReceiveMessage = " + onReceiveMessage);
   console.log("KMKMKMK messages = " + messages);
+  console.log("KMKMKMK last message = " + (messages[messages.length-1] ? messages[messages.length-1].Content : 'none'));
   const notificationDispatch = useNotificationDispatch();
 
   const {
@@ -133,6 +134,7 @@ const Chess = () => {
             <div className="messaging-container">
 	      <WithMoveValidation
 		messages={messages}
+		member={member}
 	      />
             </div>
           </>

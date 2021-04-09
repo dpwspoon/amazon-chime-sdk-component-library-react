@@ -19,6 +19,8 @@ class HumanVsHuman extends Component {
     // currently clicked square
     square: '',
     history: [],
+    lastMove: '',
+    member: '',
     channelArn: 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/channel/79c76388bd6a923cef588c035f387fe67cd60ca9b7b0e7ed96f2503b27cde4ea'
   };
 
@@ -75,7 +77,12 @@ class HumanVsHuman extends Component {
     //kmtest = useChatChannelState();
     console.log("KMKMKMKM Active channel arn: " + this.state.channelArn);
     console.log("KMKMKMKM fen: " + this.game.fen());
-    await sendChannelMessage(this.state.channelArn, this.game.fen(), 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/uuid123');
+    const memberArn = `arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/${this.state.member}`;  
+    console.log("KMKMKMKM lastMove: " + this.state.lastMove);
+    console.log("KMKMKMKM member: " + this.state.member);
+    console.log("KMKMKMKM memberArn: " + memberArn);
+    await sendChannelMessage(this.state.channelArn, this.game.fen(), memberArn);
+    //await sendChannelMessage(this.state.channelArn, this.game.fen(), 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/uuid123');
     
     this.setState(({ history, pieceSquare }) => ({
       fen: this.game.fen(),
@@ -131,7 +138,12 @@ class HumanVsHuman extends Component {
 
     console.log("KMKMKMKM Active channel arn: " + this.state.channelArn);
     console.log("KMKMKMKM fen: " + this.game.fen());
-    await sendChannelMessage(this.state.channelArn, this.game.fen(), 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/uuid123');
+    const memberArn = `arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/${this.state.member}`;  
+    console.log("KMKMKMKM lastMove: " + this.state.lastMove);
+    console.log("KMKMKMKM member: " + this.state.member);
+    console.log("KMKMKMKM memberArn: " + memberArn);
+    await sendChannelMessage(this.state.channelArn, this.game.fen(), memberArn);
+    //await sendChannelMessage(this.state.channelArn, this.game.fen(), this.state.member);
 
     this.setState({
       fen: this.game.fen(),
@@ -146,6 +158,7 @@ class HumanVsHuman extends Component {
     });
 
   onBoardChange = fen => {
+    console.log("KMKMKMK onBoardChange!  fen = " + fen);
     is_valid = this.game.validate_fen(fen);
     if (is_valid.valid) {
       this.game.load(fen);
@@ -157,7 +170,8 @@ class HumanVsHuman extends Component {
   }
 
   render() {
-    const { fen, dropSquareStyle, squareStyles } = this.state;
+    const { fen, dropSquareStyle, squareStyles, lastMove } = this.state;
+    console.log("KMKMKMKM HumanVHuman last move = " + lastMove);
 
     return this.props.children({
       squareStyles,
@@ -169,19 +183,28 @@ class HumanVsHuman extends Component {
       onDragOverSquare: this.onDragOverSquare,
       onSquareClick: this.onSquareClick,
       onSquareRightClick: this.onSquareRightClick,
-      onBoardChange: this.onBoardChange
+      onBoardChange: this.onBoardChange,
+      lastMove: lastMove
     });
   }
 }
 
 export default function WithMoveValidation(props) {
     console.log("KMKMKMKMK WithMoveValiadtion props = " + props);
-    console.log("KMKMKMKMK WithMoveValiadtion last message = " + props.messages[props.messages.length-1].Content);
+    console.log("KMKMKMKMK WithMoveValiadtion member = " + props.member);
+    //console.log("KMKMKMKMK WithMoveValiadtion last message = " + props.messages[props.messages.length-1].Content);
+    const lastMessage = props.messages[props.messages.length-1];
+    const member = props.member.userId;
+    //const lastMove = props.messages[props.messages.length-1].Content;
+    console.log("KMKMKMKMK passing last move = " + (lastMessage ? lastMessage.Content : 'none'));
+    const currPos = lastMessage ? lastMessage.Content : 'start';
   return (
     <div>
       <HumanVsHuman>
         {({
-          position,
+          //position={lastMessage ? lastMessage.Content : 'start'}
+          position={currPos},
+          //currPos,
           onDrop,
           onMouseOverSquare,
           onMouseOutSquare,
@@ -190,12 +213,16 @@ export default function WithMoveValidation(props) {
           onDragOverSquare,
           onSquareClick,
           onSquareRightClick,
-          onBoardChange
+          onBoardChange={currPos},
+          lastMove={currPos},
+          member={member}
         }) => (
           <Chessboard
             id="humanVsHuman"
             calcWidth={({ screenWidth }) => (screenWidth < 500 ? 350 : 480)}
-            position={position}
+            //position={lastMessage ? lastMessage.Content : 'start'}
+            //position={position}
+            position={currPos}
             onDrop={onDrop}
             onMouseOverSquare={onMouseOverSquare}
             onMouseOutSquare={onMouseOutSquare}

@@ -128,6 +128,7 @@ const AuthProvider = ({ children }) => {
     setAwsCredentials(stsCredentials);
 
     setIsAuthenticated(true);
+    appConfig.activeUserId = response.ChimeUserId;
   };
 
   const userSignIn = (username, password) => {
