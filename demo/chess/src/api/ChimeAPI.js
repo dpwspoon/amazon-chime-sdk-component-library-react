@@ -23,6 +23,28 @@ async function chimeClient() {
   return chime;
 }
 
+async function listAppInstanceUsers() {
+  const users = await (await chimeClient())
+      .listAppInstanceUsers({
+        AppInstanceArn: appConfig.appInstanceArn,
+        // UserPoolId: this._userPoolId
+      })
+      .promise();
+
+  return users.AppInstanceUsers;
+}
+
+async function getAppInstanceUser(appInstanceUserArn) {
+  const user = await (await chimeClient())
+      .getAppInstanceUser({
+        AppInstanceUserArn: appInstanceUserArn,
+        // UserPoolId: this._userPoolId
+      })
+      .promise();
+
+  return user.AppInstanceUser;
+}
+
 async function getMessagingSessionEndpoint() {
   const request = (await chimeClient()).getMessagingSessionEndpoint();
   const response = await request.promise();
@@ -411,5 +433,7 @@ export {
   updateChannelMessage,
   redactChannelMessage,
   getMessagingSessionEndpoint,
-  listChannelMembershipsForAppInstanceUser
+  listChannelMembershipsForAppInstanceUser,
+  listAppInstanceUsers,
+  getAppInstanceUser,
 };

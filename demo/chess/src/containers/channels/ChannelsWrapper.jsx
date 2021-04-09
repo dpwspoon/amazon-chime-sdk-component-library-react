@@ -463,7 +463,7 @@ const ChannelsWrapper = () => {
         as="button"
         onClick={() => setModal('LeaveChannel')}
       >
-        <span>Leave channel</span>
+        <span>Leave game</span>
       </PopOverItem>
     );
     const deleteChannelOption = (
@@ -542,7 +542,7 @@ const ChannelsWrapper = () => {
       />
       <div className="channel-list-wrapper">
         <div className="channel-list-header">
-          <div className="channel-list-header-title">Channels</div>
+          <div className="channel-list-header-title">Games</div>
           <IconButton
             className="create-channel-button channel-options"
             onClick={() => setModal('NewChannel')}
