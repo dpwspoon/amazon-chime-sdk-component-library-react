@@ -60,7 +60,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/': {
-        target: 'http://localhost:8080',
+        target: 'http://krismcq.aka.corp.amazon.com:8080',
         bypass: function(req, _res, _proxyOptions) {
           if (req.headers.accept.indexOf('html') !== -1) {
             console.log('Skipping proxy for browser request.');
@@ -74,7 +74,7 @@ module.exports = {
     compress: true,
     liveReload: true,
     hot: false,
-    host: 'localhost',
+    host: 'krismcq.aka.corp.amazon.com',
     port: 9000,
     https: true,
     historyApiFallback: true,
