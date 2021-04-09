@@ -609,7 +609,7 @@ Resources:
       Cors:
         AllowMethods: "'POST, OPTIONS'"
         AllowHeaders: "'Authorization'"
-        AllowOrigin: "'https://krismcq.aka.corp.amazon.com:9000'"
+        AllowOrigin: "'https://localhost:9000'"
         MaxAge: "'600'"
         AllowCredentials: True
   CredApiFunction: # Adds a POST api endpoint at "/creds" to the ApiGatewayApi via an Api event
@@ -723,7 +723,7 @@ Resources:
                  statusCode: 200,
                  headers: {
                    'Access-Control-Allow-Headers': 'Authorization',
-                   'Access-Control-Allow-Origin': 'https://krismcq.aka.corp.amazon.com:9000',
+                   'Access-Control-Allow-Origin': 'https://localhost:9000',
                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
                    'Access-Control-Allow-Credentials': 'true'
                  },
@@ -744,7 +744,7 @@ Resources:
              statusCode: 401,
              headers: {
                'Access-Control-Allow-Headers': 'Authorization',
-               'Access-Control-Allow-Origin': 'https://krismcq.aka.corp.amazon.com:9000',
+               'Access-Control-Allow-Origin': 'https://localhost:9000',
                'Access-Control-Allow-Methods': 'POST, OPTIONS',
                'Access-Control-Allow-Credentials': 'true'
              },
@@ -853,7 +853,7 @@ Resources:
                     statusCode: 200,
                     headers: {
                         'Access-Control-Allow-Headers': 'Authorization',
-                        'Access-Control-Allow-Origin': 'https://krismcq.aka.corp.amazon.com:9000',
+                        'Access-Control-Allow-Origin': 'https://localhost:9000',
                         'Access-Control-Allow-Methods': 'POST, OPTIONS',
                         'Access-Control-Allow-Credentials': 'true'
                     },
@@ -868,7 +868,7 @@ Resources:
                 statusCode: 401,
                 headers: {
                     'Access-Control-Allow-Headers': 'Authorization',
-                    'Access-Control-Allow-Origin': 'https://krismcq.aka.corp.amazon.com:9000',
+                    'Access-Control-Allow-Origin': 'https://localhost:9000',
                     'Access-Control-Allow-Methods': 'POST, OPTIONS',
                     'Access-Control-Allow-Credentials': 'true'
                 },
@@ -891,5 +891,5 @@ Outputs:
 #    Value: !Ref ChatAttachmentsBucket
   credentialExchangeServiceApiGatewayInvokeUrl:
     Value: !Sub https://${ApiGatewayApi}.execute-api.us-east-1.amazonaws.com/Stage/creds
-  createGameInvokUrl:
+  createGameInvokeUrl:
     Value: !Sub https://${ApiGatewayApi}.execute-api.us-east-1.amazonaws.com/Stage/games

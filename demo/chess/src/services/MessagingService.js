@@ -11,10 +11,10 @@ import {
   DefaultMessagingSession,
   MessagingSessionConfiguration
 } from 'amazon-chime-sdk-js';
+import { getAwsCredentials} from '../providers/AuthProvider';
 
 import { getMessagingSessionEndpoint, createMemberArn } from '../api/ChimeAPI';
 import appConfig from '../Config';
-import {AuthProvider} from "../providers/AuthProvider";
 
 class MessagingService {
   constructor(member) {
@@ -69,7 +69,7 @@ class MessagingService {
 
   connect(awsCredentials) {
     AWS.config.region = appConfig.region;
-    AWS.config.credentials = awsCredentials;
+    AWS.config.credentials = getAwsCredentials();
     this.setMessagingEndpoint();
   }
 
