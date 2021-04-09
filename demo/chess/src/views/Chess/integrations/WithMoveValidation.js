@@ -24,7 +24,8 @@ class HumanVsHuman extends Component {
     channelArn: 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/channel/79c76388bd6a923cef588c035f387fe67cd60ca9b7b0e7ed96f2503b27cde4ea'
   };
 
-  componentDidMount() {
+    componentDidMount() {
+	console.log("KMKMK new chess??");
     this.game = new Chess();
   }
 
