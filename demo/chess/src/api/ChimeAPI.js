@@ -77,10 +77,14 @@ async function sendChannelMessage(
   member,
   options = null
 ) {
-  console.log('sendChannelMessage called');
+  console.log('sendChannelMessage called ' + appConfig.activeChannel);
+
+  // console.log(member);
+  // console.log(JSON.stringify(member));
+  const memberUUID = getIdFromArn(member);
 
   const params = {
-    ChannelArn: channelArn,
+    ChannelArn:  appConfig.activeChannel,
     Content: messageContent,
     Persistence: 'PERSISTENT', // Allowed types are PERSISTENT and NON_PERSISTENT
     Type: 'STANDARD' // Allowed types are STANDARD and CONTROL
@@ -92,14 +96,14 @@ async function sendChannelMessage(
   const request = (await chimeClient()).sendChannelMessage(params);
   request.on('build', function() {
     request.httpRequest.headers[appInstanceUserArnHeader] = createMemberArn(
-      member.userId
+      memberUUID
     );
   });
   const response = await request.promise();
   const sentMessage = {
     response: response,
     CreatedTimestamp: new Date(),
-    Sender: { Arn: createMemberArn(member.userId), Name: member.username }
+    Sender: { Arn: createMemberArn(memberUUID), Name: member.username }
   };
   return sentMessage;
 }

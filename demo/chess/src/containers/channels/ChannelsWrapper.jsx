@@ -305,6 +305,10 @@ const ChannelsWrapper = () => {
 
     const newMessages = await listChannelMessages(channelArn, userId);
     const channel = await describeChannel(channelArn, userId);
+
+    // dpwspoon HACKY
+    appConfig.activeChannel = channelArn;
+
     setMessages(newMessages.Messages);
     setChannelMessageToken(newMessages.NextToken);
     setActiveChannel(channel);
