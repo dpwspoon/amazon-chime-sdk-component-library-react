@@ -114,7 +114,7 @@ class HumanVsHuman extends Component {
     });
   };
 
-  onSquareClick = square => {
+  onSquareClick = async square => {
     this.setState(({ history }) => ({
       squareStyles: squareStyling({ pieceSquare: square, history }),
       pieceSquare: square
@@ -128,6 +128,10 @@ class HumanVsHuman extends Component {
 
     // illegal move
     if (move === null) return;
+
+    console.log("KMKMKMKM Active channel arn: " + this.state.channelArn);
+    console.log("KMKMKMKM fen: " + this.game.fen());
+    await sendChannelMessage(this.state.channelArn, this.game.fen(), 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/uuid123');
 
     this.setState({
       fen: this.game.fen(),
