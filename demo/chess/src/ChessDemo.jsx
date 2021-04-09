@@ -25,20 +25,15 @@ import { IdentityProvider } from './providers/IdentityProvider';
 
 const ChessDemo = () => (
   <Router>
-    <div> KM TEST TEST TEST </div>
     <AppStateProvider>
       <Theme>
         <NotificationProvider>
-          <div> KM TEST TEST TEST 11111</div>
           <Notifications />
           <AuthProvider>
-            <div> KM TEST TEST TEST XXXXXXX</div>
             <Authenticated />
             <IdentityProvider>
-              <div> KM TEST TEST TEST YYYYYYY</div>
               <Switch>
                 <Route path={routes.CHESSDEMO}>
-                  <div> KM TEST TEST TEST 222222</div>
                   <MessagingProvider>
                     <UserPermissionProvider>
                       <Chess />

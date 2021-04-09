@@ -134,7 +134,16 @@ const Chess = () => {
           </>
         ) : (
 	  <div>
-            <Chessboard />
+            <div className="messaging-container">
+              <Chessboard
+                id="EmptyBoard"
+                calcWidth={({ screenWidth }) => (screenWidth < 500 ? 350 : 480)}
+                boardStyle={{
+                  borderRadius: '5px',
+                  boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`
+                }}
+              />
+            </div>
 	  </div>
         )}
       </Cell>
