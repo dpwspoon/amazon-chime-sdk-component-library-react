@@ -93,7 +93,7 @@ const Channels = () => {
           }}
           className="app-heading"
         >
-          Chat App
+          Chess App
           <div className="user-block">
             <a className="user-info" href="#">
               {member.username || 'Unknown'}

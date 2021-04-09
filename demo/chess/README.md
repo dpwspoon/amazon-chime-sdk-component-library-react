@@ -21,7 +21,7 @@ This doc is intended for developers interested in the Amazon Chime Chat SDK, eve
     
     or
     
-    ```aws cloudformation create-stack --stack-name <STACKNAME> --template-body file://src/backend/serverless/template.yaml --parameters ParameterKey=DemoName,ParameterValue=<NAME_OF_DEMO> --capabilities CAPABILITY_NAMED_IAM```
+    ```aws cloudformation create-stack --stack-name <STACKNAME> --template-body file://src/backend/serverless/template.yaml --parameters ParameterKey=DemoName,ParameterValue=<NAME_OF_DEMO> --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND```
 5. Verify and record outputs via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
     
     or

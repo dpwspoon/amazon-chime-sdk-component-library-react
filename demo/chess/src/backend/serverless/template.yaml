@@ -549,6 +549,21 @@ Resources:
                 Resource:
                   - !Join ['', [!GetAtt TriggerChimeAppInstanceLambda.AppInstanceArn, '/user/${aws:PrincipalTag/UserUUID}']]
                   - !Join ['', [!GetAtt TriggerChimeAppInstanceLambda.AppInstanceArn, '/channel/*']]
+        - PolicyName: !Sub ${DemoName}-ChimeSDKDemoUserIdentityPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "chime:GetMessagingSessionEndpoint"
+                Resource: "*"
+              - Effect: "Allow"
+                Action:
+                  - "chime:ListAppInstanceUsers"
+                  - "chime:DescribeAppInstanceUser"
+                Resource:
+                  - !Join ['', [!GetAtt TriggerChimeAppInstanceLambda.AppInstanceArn, '/user/*']]
+                  - !GetAtt TriggerChimeAppInstanceLambda.AppInstanceArn
         - PolicyName: !Sub ${DemoName}-SendChannelMessage
           PolicyDocument:
             Version: "2012-10-17"
@@ -609,7 +624,7 @@ Resources:
       Cors:
         AllowMethods: "'POST, OPTIONS'"
         AllowHeaders: "'Authorization'"
-        AllowOrigin: "'https://krismcq.aka.corp.amazon.com:9000'"
+        AllowOrigin: "'https://localhost:9000'"
         MaxAge: "'600'"
         AllowCredentials: True
   CredApiFunction: # Adds a POST api endpoint at "/creds" to the ApiGatewayApi via an Api event
@@ -646,9 +661,10 @@ Resources:
          const USER_ROLE_ARN = process.env.UserRoleArn;
 
          class User {
-           constructor(uuid, displayName = null) {
+           constructor(uuid, displayName = null, friends = []) {
              this.uuid = uuid;
              this.displayName = displayName;
+             this.friends = friends;
            }
          }
 
@@ -662,9 +678,9 @@ Resources:
              // TODO: Optionally modify user name and passwords that are hardcoded for demo purposes.  In production remove this code with your
              // own credential validation
              const validUsers = {
-               'william@example.com:changeit1': new User('uuid123', 'bill'),
-               'fran@example.com:changeit2': new User('uuidABC', 'fran'),
-               'arun@example.com:changeit3': new User('uuidXYZ', 'arun')
+               'william@example.com:changeit1': new User('uuid123', 'bill', ['uuidABC', 'uuidXYZ']),
+               'fran@example.com:changeit2': new User('uuidABC', ['uuid123', 'uuidXYZ']),
+               'arun@example.com:changeit3': new User('uuidXYZ', ['uuid123'])
              };
              user = validUsers[clearTextCreds];
            } catch (err) {
@@ -695,6 +711,9 @@ Resources:
          async function createOrGetChimeUserArn(user) {
            const createUserResponse = await chime
              .createAppInstanceUser({
+               Metadata: JSON.stringify({
+                 "friends": user.friends
+               }),
                AppInstanceArn: APP_INSTANCE_ID,
                AppInstanceUserId: user.uuid,
                ClientRequestToken: uuidv4(),
@@ -723,7 +742,7 @@ Resources:
                  statusCode: 200,
                  headers: {
                    'Access-Control-Allow-Headers': 'Authorization',
-                   'Access-Control-Allow-Origin': 'https://krismcq.aka.corp.amazon.com:9000',
+                   'Access-Control-Allow-Origin': 'https://localhost:9000',
                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
                    'Access-Control-Allow-Credentials': 'true'
                  },
@@ -744,7 +763,7 @@ Resources:
              statusCode: 401,
              headers: {
                'Access-Control-Allow-Headers': 'Authorization',
-               'Access-Control-Allow-Origin': 'https://krismcq.aka.corp.amazon.com:9000',
+               'Access-Control-Allow-Origin': 'https://localhost:9000',
                'Access-Control-Allow-Methods': 'POST, OPTIONS',
                'Access-Control-Allow-Credentials': 'true'
              },
@@ -804,6 +823,7 @@ Resources:
                     "ClientRequestToken": requestToken,
                     "Name": name,
                     "Privacy": 'PUBLIC',
+                    "Metadata": JSON.stringify({'player1':user1, 'player2':user2}),
                     "Tags": [
                         {
                             "Key": "type",
@@ -853,7 +873,7 @@ Resources:
                     statusCode: 200,
                     headers: {
                         'Access-Control-Allow-Headers': 'Authorization',
-                        'Access-Control-Allow-Origin': 'https://krismcq.aka.corp.amazon.com:9000',
+                        'Access-Control-Allow-Origin': 'https://localhost:9000',
                         'Access-Control-Allow-Methods': 'POST, OPTIONS',
                         'Access-Control-Allow-Credentials': 'true'
                     },
@@ -868,7 +888,7 @@ Resources:
                 statusCode: 401,
                 headers: {
                     'Access-Control-Allow-Headers': 'Authorization',
-                    'Access-Control-Allow-Origin': 'https://krismcq.aka.corp.amazon.com:9000',
+                    'Access-Control-Allow-Origin': 'https://localhost:9000',
                     'Access-Control-Allow-Methods': 'POST, OPTIONS',
                     'Access-Control-Allow-Credentials': 'true'
                 },
@@ -891,5 +911,5 @@ Outputs:
 #    Value: !Ref ChatAttachmentsBucket
   credentialExchangeServiceApiGatewayInvokeUrl:
     Value: !Sub https://${ApiGatewayApi}.execute-api.us-east-1.amazonaws.com/Stage/creds
-  createGameInvokUrl:
+  createGameInvokeUrl:
     Value: !Sub https://${ApiGatewayApi}.execute-api.us-east-1.amazonaws.com/Stage/games

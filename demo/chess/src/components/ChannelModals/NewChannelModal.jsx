@@ -1,7 +1,7 @@
 // Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {
   Modal,
@@ -11,17 +11,25 @@ import {
   ModalButton,
   Input,
   Label,
-  RadioGroup,
+  RadioGroup, ChannelItem, ChannelList,
 } from 'amazon-chime-sdk-component-library-react';
 
 import './NewChannelModal.css';
 import { useAuthContext } from '../../providers/AuthProvider';
+import {useChatChannelState} from "../../providers/ChatMessagesProvider";
+import { listAppInstanceUsers, getAppInstanceUser } from '../../api/ChimeAPI';
+import ContactPicker from "../ContactPicker";
 
 export const NewChannelModal = ({ onClose, onCreateChannel }) => {
   const [name, setName] = useState('');
   const [privacy, setPrivacy] = useState('PRIVATE');
   const [mode, setMode] = useState('RESTRICTED');
-
+  const [usersList, setUsersList] = useState([]);
+    const {
+        channelList,
+        activeChannel,
+        unreadChannels,
+    } = useChatChannelState();
   const { member } = useAuthContext();
   const onNameChange = (e) => {
     setName(e.target.value);
@@ -32,16 +40,40 @@ export const NewChannelModal = ({ onClose, onCreateChannel }) => {
   const onModeChange = (e) => {
     setMode(e.target.value);
   };
+
+  const getAllUsers = () => {
+      listAppInstanceUsers().then((users) => {
+          const list = users.map((user) => {
+              return {
+                  label: user.Name,
+                  value: user.AppInstanceUserArn,
+              };
+          });
+          setUsersList(list);
+      })
+      .catch((err) => {
+          throw new Error(`Failed at searchUsers() with error: ${err}`);
+      });
+  }
+
+  // useEffect(() => {
+  //     getAllUsers()
+  // })
+
+    // getAllUsers();
+
+  // const opponents = usersList;
+
   return (
     <Modal size="lg" onClose={onClose}>
-      <ModalHeader title="Add channel" />
+      <ModalHeader title="Create Game" />
       <ModalBody>
         <form
           onSubmit={(e) => onCreateChannel(e, name, mode, privacy)}
           id="new-channel-form"
         >
           <div className="ch-form-field-input">
-            <Label className="lbl">Channel name</Label>
+            <Label className="lbl">Game name</Label>
             <Input
               className="value"
               showClear={false}
@@ -50,44 +82,54 @@ export const NewChannelModal = ({ onClose, onCreateChannel }) => {
               onChange={(e) => onNameChange(e)}
             />
           </div>
+
           <div className="ch-form-field-input">
-            <Label className="lbl">Moderator</Label>
-            <Label className="value">{member.username}</Label>
+              {getAllUsers()}
+              {alert(usersList)}
+            <Label className="lbl">Choose Opponent</Label>
+              {/*<ContactPicker onChange={(e) => onNameChange(e)} options={usersList} />*/}
+
+
           </div>
-          <div className="ch-form-field-input">
-            <Label className="lbl">Type (cannot be changed)</Label>
-            <div className="value ch-type-options">
-              <RadioGroup
-                options={[
-                  { value: 'PRIVATE', label: 'Private' },
-                  { value: 'PUBLIC', label: 'Public' },
-                ]}
-                value={privacy}
-                onChange={(e) => onPrivacyChange(e)}
-              />
-            </div>
-          </div>
-          {privacy !== 'PUBLIC' && (
-            <div className="ch-form-field-input">
-              <Label className="lbl">Mode</Label>
-              <div className="value ch-mode-options">
-                <RadioGroup
-                  options={[
-                    { value: 'RESTRICTED', label: 'Restricted' },
-                    { value: 'UNRESTRICTED', label: 'Unrestricted' },
-                  ]}
-                  value={mode}
-                  onChange={(e) => onModeChange(e)}
-                />
-              </div>
-            </div>
-          )}
+
+          {/*<div className="ch-form-field-input">*/}
+          {/*  <Label className="lbl">Moderator</Label>*/}
+          {/*  <Label className="value">{member.username}</Label>*/}
+          {/*</div>*/}
+          {/*<div className="ch-form-field-input">*/}
+          {/*  <Label className="lbl">Type (cannot be changed)</Label>*/}
+          {/*  <div className="value ch-type-options">*/}
+          {/*    <RadioGroup*/}
+          {/*      options={[*/}
+          {/*        { value: 'PRIVATE', label: 'Private' },*/}
+          {/*        { value: 'PUBLIC', label: 'Public' },*/}
+          {/*      ]}*/}
+          {/*      value={privacy}*/}
+          {/*      onChange={(e) => onPrivacyChange(e)}*/}
+          {/*    />*/}
+          {/*  </div>*/}
+          {/*</div>*/}
+          {/*{privacy !== 'PUBLIC' && (*/}
+          {/*  <div className="ch-form-field-input">*/}
+          {/*    <Label className="lbl">Mode</Label>*/}
+          {/*    <div className="value ch-mode-options">*/}
+          {/*      <RadioGroup*/}
+          {/*        options={[*/}
+          {/*          { value: 'RESTRICTED', label: 'Restricted' },*/}
+          {/*          { value: 'UNRESTRICTED', label: 'Unrestricted' },*/}
+          {/*        ]}*/}
+          {/*        value={mode}*/}
+          {/*        onChange={(e) => onModeChange(e)}*/}
+          {/*      />*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*)}*/}
         </form>
       </ModalBody>
       <ModalButtonGroup
         primaryButtons={[
           <ModalButton
-            label="Add"
+            label="Create"
             type="submit"
             form="new-channel-form"
             variant="primary"
