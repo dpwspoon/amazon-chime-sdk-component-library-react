@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Chess from 'chess.js';
 
 import Chessboard from 'chessboardjsx';
+import { sendChannelMessage } from '../../../api/ChimeAPI';
 
 class HumanVsHuman extends Component {
   static propTypes = { children: PropTypes.func };
@@ -17,7 +18,8 @@ class HumanVsHuman extends Component {
     pieceSquare: '',
     // currently clicked square
     square: '',
-    history: []
+    history: [],
+    channelArn: 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/channel/249a4a84f8ada651e0801548da0a190c7490c7dcca8d4569a70fbc7343a1d4e7'
   };
 
   componentDidMount() {
@@ -68,6 +70,13 @@ class HumanVsHuman extends Component {
 
     // illegal move
     if (move === null) return;
+    // send the move to the backend
+    //   if the send to the backend fails, abort the move with an error
+    //kmtest = useChatChannelState();
+    console.log("KMKMKMKM Active channel arn: " + this.state.channelArn);
+    console.log("KMKMKMKM fen: " + this.game.fen());
+      sendChannelMessage(this.state.channelArn, this.game.fen(), 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/uuid123');
+    
     this.setState(({ history, pieceSquare }) => ({
       fen: this.game.fen(),
       history: this.game.history({ verbose: true }),
