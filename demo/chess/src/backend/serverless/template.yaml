@@ -679,8 +679,8 @@ Resources:
              // own credential validation
              const validUsers = {
                'william@example.com:changeit1': new User('uuid123', 'bill', ['uuidABC', 'uuidXYZ']),
-               'fran@example.com:changeit2': new User('uuidABC', ['uuid123', 'uuidXYZ']),
-               'arun@example.com:changeit3': new User('uuidXYZ', ['uuid123'])
+               'fran@example.com:changeit2': new User('uuidABC', 'fran', ['uuid123', 'uuidXYZ']),
+               'arun@example.com:changeit3': new User('uuidXYZ', 'arun', ['uuid123'])
              };
              user = validUsers[clearTextCreds];
            } catch (err) {
