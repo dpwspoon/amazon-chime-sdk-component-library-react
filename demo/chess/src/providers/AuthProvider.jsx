@@ -74,8 +74,10 @@ const AuthProvider = ({ children }) => {
       await Auth.updateUserAttributes(user, {
         profile: userId,
       });
+      console.log("KMKMKMKMKM:  user is authenticated");
     } catch (err) {
       console.log(err);
+      console.log("KMKMKMKMKM:  " + err);
     }
   };
 

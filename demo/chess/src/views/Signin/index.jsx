@@ -29,7 +29,7 @@ const Signin = () => {
           }}
           className="app-heading"
         >
-          Chat App
+          Chess App
         </Heading>
       </Cell>
       <Cell gridArea="main">

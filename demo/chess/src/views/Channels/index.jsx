@@ -22,6 +22,7 @@ import {
   useChatMessagingState,
 } from '../../providers/ChatMessagesProvider';
 import { useAuthContext } from '../../providers/AuthProvider';
+import Chessboard from 'chessboardjsx';
 
 const Channels = () => {
   const currentTheme = useTheme();
@@ -82,7 +83,6 @@ const Channels = () => {
       '
     >
       <Cell gridArea="heading">
-        {/* HEADING */}
         <Heading
           level={5}
           style={{
@@ -116,13 +116,15 @@ const Channels = () => {
             borderRight: `solid 1px ${currentTheme.colors.greys.grey30}`,
           }}
         >
-          {/* SIDEPANEL CHANNELS LIST */}
           <ChannelsWrapper />
         </div>
       </Cell>
       <Cell gridArea="main" style={{ height: 'calc(100vh - 3rem)' }}>
-        {/* MAIN CHAT CONTENT WINDOW */}
         {activeChannel.ChannelArn ? (
+	  // Ideally this would show moves for past games or the chessboard
+	  // for an active game.  Past games is probably beyond the scope of
+	  // what can be accomplished in 1.5 days, so just show the board
+	  // for a new game.
           <>
             <div className="messaging-container">
               <Messages
@@ -150,7 +152,10 @@ const Channels = () => {
             </div>
           </>
         ) : (
+	  <div>
           <div className="placeholder">Welcome</div>
+	  <Chessboard position="start"/>
+	  </div>
         )}
       </Cell>
     </Grid>

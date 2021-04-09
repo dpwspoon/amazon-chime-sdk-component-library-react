@@ -3,12 +3,14 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Chat from './Chat';
+import ChessDemo from './ChessDemo';
+//import Chat from './Chat';
 import configureAmplify from './services/servicesConfig';
 
 // Call services configuration
 configureAmplify();
 
 document.addEventListener('DOMContentLoaded', _event => {
-  ReactDOM.render(<Chat />, document.getElementById('root'));
+  ReactDOM.render(<ChessDemo />, document.getElementById('root'));
+  //ReactDOM.render(<Chat />, document.getElementById('root'));
 });

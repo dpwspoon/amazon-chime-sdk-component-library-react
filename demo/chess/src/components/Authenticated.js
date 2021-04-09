@@ -20,7 +20,7 @@ const Authenticated = ({ children }) => {
         type: 2, // REMOVE_ALL
         payload: {}
       });
-      history.push(routes.CHAT);
+      history.push(routes.CHESSDEMO);
     } else {
       history.push(routes.SIGNIN);
     }
