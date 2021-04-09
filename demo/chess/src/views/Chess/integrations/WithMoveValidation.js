@@ -60,7 +60,7 @@ class HumanVsHuman extends Component {
     }));
   };
 
-  onDrop = ({ sourceSquare, targetSquare }) => {
+  onDrop = async ({ sourceSquare, targetSquare }) => {
     // see if the move is legal
     let move = this.game.move({
       from: sourceSquare,
@@ -75,7 +75,7 @@ class HumanVsHuman extends Component {
     //kmtest = useChatChannelState();
     console.log("KMKMKMKM Active channel arn: " + this.state.channelArn);
     console.log("KMKMKMKM fen: " + this.game.fen());
-    sendChannelMessage(this.state.channelArn, this.game.fen(), 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/uuid123');
+    await sendChannelMessage(this.state.channelArn, this.game.fen(), 'arn:aws:chime:us-east-1:770433969263:app-instance/93bc3b74-ff21-43f7-9694-8281a98f865a/user/uuid123');
     
     this.setState(({ history, pieceSquare }) => ({
       fen: this.game.fen(),
@@ -141,6 +141,17 @@ class HumanVsHuman extends Component {
       squareStyles: { [square]: { backgroundColor: 'deepPink' } }
     });
 
+  onBoardChange = fen => {
+    is_valid = this.game.validate_fen(fen);
+    if (is_valid.valid) {
+      this.game.load(fen);
+      this.setState({
+        fen: this.game.fen(),
+        history: this.game.history({ verbose: true })
+      });
+    }
+  }
+
   render() {
     const { fen, dropSquareStyle, squareStyles } = this.state;
 
@@ -153,12 +164,15 @@ class HumanVsHuman extends Component {
       dropSquareStyle,
       onDragOverSquare: this.onDragOverSquare,
       onSquareClick: this.onSquareClick,
-      onSquareRightClick: this.onSquareRightClick
+      onSquareRightClick: this.onSquareRightClick,
+      onBoardChange: this.onBoardChange
     });
   }
 }
 
-export default function WithMoveValidation() {
+export default function WithMoveValidation(props) {
+    console.log("KMKMKMKMK WithMoveValiadtion props = " + props);
+    console.log("KMKMKMKMK WithMoveValiadtion last message = " + props.messages[props.messages.length-1].Content);
   return (
     <div>
       <HumanVsHuman>
@@ -171,7 +185,8 @@ export default function WithMoveValidation() {
           dropSquareStyle,
           onDragOverSquare,
           onSquareClick,
-          onSquareRightClick
+          onSquareRightClick,
+          onBoardChange
         }) => (
           <Chessboard
             id="humanVsHuman"

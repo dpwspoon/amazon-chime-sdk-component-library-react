@@ -36,6 +36,8 @@ const Chess = () => {
     setMessages,
     onReceiveMessage,
   } = useChatMessagingState();
+  console.log("KMKMKMK onReceiveMessage = " + onReceiveMessage);
+  console.log("KMKMKMK messages = " + messages);
   const notificationDispatch = useNotificationDispatch();
 
   const {
@@ -129,7 +131,9 @@ const Chess = () => {
 	  // for a new game.
           <>
             <div className="messaging-container">
-	      <WithMoveValidation />
+	      <WithMoveValidation
+		messages={messages}
+	      />
             </div>
           </>
         ) : (
