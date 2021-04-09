@@ -34,6 +34,19 @@ async function listAppInstanceUsers() {
   return users.AppInstanceUsers;
 }
 
+function getIdFromArn(arn) {
+  // TODO, ugly
+  const res = arn.split("/");
+  return res[res.length - 1];
+}
+
+async function createGame(gameName, player1Arn, player2Arn) {
+  return await fetch(appConfig.createGameInvokeUrl, {
+    method: 'POST',
+    body: JSON.stringify({"name":gameName,"player1":getIdFromArn(player1Arn),"player2":getIdFromArn(player2Arn)})
+  }).then(response => response.json());
+}
+
 async function getAppInstanceUser(appInstanceUserArn) {
   const user = await (await chimeClient())
       .getAppInstanceUser({
@@ -436,4 +449,5 @@ export {
   listChannelMembershipsForAppInstanceUser,
   listAppInstanceUsers,
   getAppInstanceUser,
+  createGame
 };

@@ -32,6 +32,8 @@ import {
   listChannelBans,
   createChannelBan,
   deleteChannelBan,
+  listAppInstanceUsers,
+  createGame
 } from '../../api/ChimeAPI';
 import appConfig from '../../Config';
 
@@ -143,7 +145,7 @@ const ChannelsWrapper = () => {
     }
   }, [activeChannel.ChannelArn, modal]);
 
-  const onCreateChannel = async (e, newName, mode, privacy) => {
+  const onCreateChannel = async (e, newName, player2) => {
     e.preventDefault();
     if (!newName) {
       dispatch({
@@ -153,14 +155,23 @@ const ChannelsWrapper = () => {
           severity: 'error',
         },
       });
+    } else if (!player2) {
+      dispatch({
+        type: 0,
+        payload: {
+          message: 'Error, player2 name cannot be blank.',
+          severity: 'error',
+        },
+      });
     } else {
-      const channelArn = await createChannel(
-        appConfig.appInstanceArn,
-        newName,
-        mode,
-        privacy,
-        userId
-      );
+      const appInstanceUsers = await listAppInstanceUsers();
+      console.log(JSON.stringify(appInstanceUsers));
+      console.log(appInstanceUsers.filter(user => user.Name === player2)[0]);
+      const player2Arn = appInstanceUsers.filter(user => user.Name === player2)[0].AppInstanceUserArn;
+      const player1Arn = `${appConfig.appInstanceArn}/user/${userId}`;
+
+      const game = await createGame(newName, player1Arn, player2Arn);
+      const channelArn = game.ChannelArn;
       if (channelArn) {
         const channel = await describeChannel(channelArn, userId);
         setModal('');

@@ -22,6 +22,7 @@ import ContactPicker from "../ContactPicker";
 
 export const NewChannelModal = ({ onClose, onCreateChannel }) => {
   const [name, setName] = useState('');
+  const [player2, setPlayer2] = useState('');
   const [privacy, setPrivacy] = useState('PRIVATE');
   const [mode, setMode] = useState('RESTRICTED');
   const [usersList, setUsersList] = useState([]);
@@ -34,6 +35,9 @@ export const NewChannelModal = ({ onClose, onCreateChannel }) => {
   const onNameChange = (e) => {
     setName(e.target.value);
   };
+  const onPlayer2Change = (e) => {
+    setPlayer2(e.target.value);
+  };
   const onPrivacyChange = (e) => {
     setPrivacy(e.target.value);
   };
@@ -41,35 +45,12 @@ export const NewChannelModal = ({ onClose, onCreateChannel }) => {
     setMode(e.target.value);
   };
 
-  const getAllUsers = () => {
-      listAppInstanceUsers().then((users) => {
-          const list = users.map((user) => {
-              return {
-                  label: user.Name,
-                  value: user.AppInstanceUserArn,
-              };
-          });
-          setUsersList(list);
-      })
-      .catch((err) => {
-          throw new Error(`Failed at searchUsers() with error: ${err}`);
-      });
-  }
-
-  // useEffect(() => {
-  //     getAllUsers()
-  // })
-
-    // getAllUsers();
-
-  // const opponents = usersList;
-
   return (
     <Modal size="lg" onClose={onClose}>
       <ModalHeader title="Create Game" />
       <ModalBody>
         <form
-          onSubmit={(e) => onCreateChannel(e, name, mode, privacy)}
+          onSubmit={(e) => onCreateChannel(e, name, player2)}
           id="new-channel-form"
         >
           <div className="ch-form-field-input">
@@ -84,18 +65,29 @@ export const NewChannelModal = ({ onClose, onCreateChannel }) => {
           </div>
 
           <div className="ch-form-field-input">
-              {getAllUsers()}
-              {alert(usersList)}
-            <Label className="lbl">Choose Opponent</Label>
+              {/*{getAllUsers()}*/}
+              {/*{alert(usersList)}*/}
+            {/*<Label className="lbl">Choose Opponent</Label>*/}
               {/*<ContactPicker onChange={(e) => onNameChange(e)} options={usersList} />*/}
 
 
           </div>
 
-          {/*<div className="ch-form-field-input">*/}
-          {/*  <Label className="lbl">Moderator</Label>*/}
-          {/*  <Label className="value">{member.username}</Label>*/}
-          {/*</div>*/}
+          <div className="ch-form-field-input">
+            <Label className="lbl">Player 1</Label>
+            <Label className="value">{member.username}</Label>
+          </div>
+
+            <div className="ch-form-field-input">
+                <Label className="lbl">Player 2</Label>
+                <Input
+                    className="value"
+                    showClear={false}
+                    type="text"
+                    value={player2}
+                    onChange={(e) => onPlayer2Change(e)}
+                />
+            </div>
           {/*<div className="ch-form-field-input">*/}
           {/*  <Label className="lbl">Type (cannot be changed)</Label>*/}
           {/*  <div className="value ch-type-options">*/}
