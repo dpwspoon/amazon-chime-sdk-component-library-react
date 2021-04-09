@@ -26,6 +26,8 @@ import WithMoveValidation from './integrations/WithMoveValidation';
 //import WithMoveValidation from "./integrations/WithMoveValidation";
 import Chessboard from 'chessboardjsx';
 
+let globalLastMove = '';
+
 const Chess = () => {
   const currentTheme = useTheme();
 
@@ -39,6 +41,9 @@ const Chess = () => {
   console.log("KMKMKMK onReceiveMessage = " + onReceiveMessage);
   console.log("KMKMKMK messages = " + messages);
   console.log("KMKMKMK last message = " + (messages[messages.length-1] ? messages[messages.length-1].Content : 'none'));
+  if (messages[messages.length-1]) {
+    globalLastMove = messages[messages.length-1].Content;
+  }
   const notificationDispatch = useNotificationDispatch();
 
   const {
@@ -135,6 +140,7 @@ const Chess = () => {
 	      <WithMoveValidation
 		messages={messages}
 		member={member}
+		lastMove={globalLastMove}
 	      />
             </div>
           </>

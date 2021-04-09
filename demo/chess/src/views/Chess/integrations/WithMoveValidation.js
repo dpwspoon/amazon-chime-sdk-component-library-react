@@ -28,6 +28,26 @@ class HumanVsHuman extends Component {
     this.game = new Chess();
   }
 
+    componentDidUpdate(prevProps) {
+	if (this.props.lastMove != prevProps.lastMove) {
+	console.log("KMKMKMK componentDidUpdate prevProps = " + JSON.stringify(prevProps));
+	console.log("KMKMKMK componentDidUpdate curr props = " + JSON.stringify(this.props));
+	console.log("KMKMKMK componentDidUpdate curr props chilren = " + JSON.stringify(this.props.children));
+	    console.log("KMKMKMK componentDidUpdate last move cchangeed!  callogn on board update");
+	   // onBoardChange(this.props.lastMove);
+	        console.log("KMKMKMK onBoardChange!  fen = " + this.props.lastMove);
+    let is_valid = this.game.validate_fen(this.props.lastMove);
+    if (is_valid.valid) {
+      this.game.load(this.props.lastMove);
+      this.setState({
+        fen: this.game.fen(),
+        history: this.game.history({ verbose: true })
+      });
+    }
+
+	}
+  }  
+
   // keep clicked square style and remove hint squares
   removeHighlightSquare = () => {
     this.setState(({ pieceSquare, history }) => ({
@@ -157,7 +177,7 @@ class HumanVsHuman extends Component {
       squareStyles: { [square]: { backgroundColor: 'deepPink' } }
     });
 
-  onBoardChange = fen => {
+  onBoardChange = function(fen) {
     console.log("KMKMKMK onBoardChange!  fen = " + fen);
     is_valid = this.game.validate_fen(fen);
     if (is_valid.valid) {
@@ -192,6 +212,7 @@ class HumanVsHuman extends Component {
 export default function WithMoveValidation(props) {
     console.log("KMKMKMKMK WithMoveValiadtion props = " + props);
     console.log("KMKMKMKMK WithMoveValiadtion member = " + props.member);
+    console.log("KMKMKMKMK WithMoveValiadtion lastMove = " + props.lastMove);
     //console.log("KMKMKMKMK WithMoveValiadtion last message = " + props.messages[props.messages.length-1].Content);
     const lastMessage = props.messages[props.messages.length-1];
     const member = props.member.userId;
@@ -200,7 +221,7 @@ export default function WithMoveValidation(props) {
     const currPos = lastMessage ? lastMessage.Content : 'start';
   return (
     <div>
-      <HumanVsHuman>
+	  <HumanVsHuman lastMove={currPos}>
         {({
           //position={lastMessage ? lastMessage.Content : 'start'}
           position={currPos},
