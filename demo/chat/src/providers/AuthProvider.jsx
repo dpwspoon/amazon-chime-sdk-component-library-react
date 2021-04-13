@@ -129,39 +129,39 @@ const AuthProvider = ({ children }) => {
   };
 
   const userSignIn = (username, password) => {
-    if (appConfig.useCredentialExchangeService) {
-      fetch(appConfig.credentialExchangeServiceApiGatewayInvokeUrl, {
-        method: 'POST',
-        credentials: 'include',
-        headers: new Headers({
-          Authorization: `Basic ${btoa(`${username}:${password}`)}`
-        })
-      }).then(response => response.json())
-        .then(data => setAuthenticatedUserFromCredentialExchangeService(data))
-        .catch(err => {
-          console.log(err);
-          notificationDispatch({
-            type: 0,
-            payload: {
-              message: 'Your username and/or password is invalid!',
-              severity: 'error',
-            },
-          });
+    Auth.signIn({ username, password })
+      .then(setAuthenticatedUserFromCognito)
+      .catch((err) => {
+        console.log(err);
+        notificationDispatch({
+          type: 0,
+          payload: {
+            message: 'Your username and/or password is invalid!',
+            severity: 'error',
+          },
         });
-    } else { //default to Cogntio via Amplify
-      Auth.signIn({ username, password })
-        .then(setAuthenticatedUserFromCognito)
-        .catch((err) => {
-          console.log(err);
-          notificationDispatch({
-            type: 0,
-            payload: {
-              message: 'Your username and/or password is invalid!',
-              severity: 'error',
-            },
-          });
+      });
+  };
+
+  const userExchangeCreds = accessToken => {
+    fetch(appConfig.credentialExchangeServiceApiGatewayInvokeUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: new Headers({
+        Authorization: `Basic ${btoa(accessToken)}`
+      })
+    }).then(response => response.json())
+      .then(data => setAuthenticatedUserFromCredentialExchangeService(data))
+      .catch(err => {
+        console.log(err);
+        notificationDispatch({
+          type: 0,
+          payload: {
+            message: 'Your username and/or password is invalid!',
+            severity: 'error',
+          },
         });
-    }
+      });
   };
 
   useEffect(() => {
@@ -180,6 +180,7 @@ const AuthProvider = ({ children }) => {
     userSignOut,
     userSignUp,
     userSignIn,
+    userExchangeCreds
   };
 
   return (

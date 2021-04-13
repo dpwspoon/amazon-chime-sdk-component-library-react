@@ -3,83 +3,55 @@
 
 import React, { useState } from 'react';
 import {
-  FormField,
+  Textarea,
   Input,
-  Flex,
   Button,
-  Heading,
 } from 'amazon-chime-sdk-component-library-react';
 
 import './LoginWithCredentialExchangeService.css';
 
 const LoginWithCredentialExchangeService = (props) => {
-  const [userName, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, register } = props;
+  const { exchangeCreds } = props;
 
-  const onRegister = (e) => {
+  const [accessToken, setAccessToken] = useState(
+    "{\n  defaultsTo: 'anonymousAccess',\n}\n"
+  );
+
+  const onAccessToken = (e) => {
+    setAccessToken(e.target.value);
+  };
+
+  const onSubmit = (e) => {
     e.preventDefault();
-    register(userName, password, '');
-  };
-
-  const onLogin = (e) => {
-    e.preventDefault();
-    login(userName, password);
-  };
-
-  const onUserName = (e) => {
-    setUsername(e.target.value);
-  };
-
-  const onPassword = (e) => {
-    setPassword(e.target.value);
+    console.log(e);
+    exchangeCreds(accessToken);
   };
 
   return (
-    <Flex className="signin-container" layout="stack">
-      <Heading
-        css="font-size: 1.1875rem !important; line-height: 4rem !important;"
-        level="1"
-      >
-        Sign in with Credential Exchange Service
-      </Heading>
-      <Heading
+    <div>
+      <p
         css="font-size: 0.875rem !important; line-height: 3rem !important;"
         level="2"
       >
-        Enter your information and select Sign in or Register
-      </Heading>
-      <form onSubmit={onLogin} className="signin-form">
+        Enter your Identity Token (JWT, PASETO, custom, etc):
+      </p>
+      <form onSubmit={onSubmit} className="signin-form">
         <div className="input-container">
-          <FormField
+          <Textarea
             field={Input}
-            label="User name"
-            className="input username-input"
-            onChange={(e) => onUserName(e)}
-            value={userName}
-            type="text"
-            showClear
+            label="AccessToken"
+            className="input access-token-input"
+            onChange={(e) => onAccessToken(e)}
+            value={accessToken}
             layout="horizontal"
-          />
-          <FormField
-            field={Input}
-            label="Password"
-            fieldProps={{ type: 'password' }}
-            className="input password-input"
-            onChange={(e) => onPassword(e)}
-            value={password}
-            showClear
-            layout="horizontal"
-            infoText="Minimum 8 characters, at least 1 uppercase, 1 number, 1 special character"
           />
         </div>
-        <div className="signin-buttons">
-          <Button onClick={onLogin} label="Sign in" variant="primary" />
-          <span className="or-span">or</span>
-          <Button onClick={onRegister} label="Register" variant="secondary" />
+        <br />
+        <div className="access-token-submit-button">
+          <Button onClick={onSubmit} label="Exchange Token for AWS Credentials" variant="primary" />
         </div>
       </form>
-    </Flex>
+    </div>
   );
 };
 

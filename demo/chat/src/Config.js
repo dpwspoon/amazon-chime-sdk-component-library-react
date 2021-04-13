@@ -3,11 +3,13 @@
 
 const appConfig = {
   useCredentialExchangeService: true,
-  credentialExchangeServiceApiGatewayInvokeUrl: 'https://5j4habydol.execute-api.us-east-1.amazonaws.com/Stage/creds',
-  cognitoUserPoolId: 'us-east-1_JDEDGohIN',
-  cognitoAppClientId: 'miurirdkf51gnjvdms7l95igq',
+  credentialExchangeServiceApiGatewayInvokeUrl:
+    'https://uj14mo9g66.execute-api.us-east-1.amazonaws.com/Stage/creds',
+  cognitoUserPoolId: 'us-east-1_pAf9Oa2fs',
+  cognitoAppClientId: '7pck89dnfa77dh9g4mggfhul9d',
   cognitoIdentityPoolId: 'us-east-1:ce033169-ea04-4271-9f42-e6d8d1a356af',
-  appInstanceArn: 'arn:aws:chime:us-east-1:925089040268:app-instance/4f2b2b75-2aa1-4bdc-accc-9883ae37c4cf',
+  appInstanceArn:
+    'arn:aws:chime:us-east-1:925089040268:app-instance/dc1c062b-18d5-40a1-9ae3-5f1edc1b3612',
   region: 'us-east-1',
   attachments_s3_bucket_name: 'chimedemo-chatattachmentsbucket-ie3vmpw9u0bc'
 };

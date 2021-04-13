@@ -7,7 +7,7 @@ export const rootPath = window.location.href.includes(awsPath)
   : '/';
 
 const routes = {
-  SIGNIN_WITH_COGNITO: `${rootPath}`,
+  SIGNIN: `${rootPath}`,
   SIGNIN_WITH_CREDENTIAL_EXCHANGE_SERVICE: `${rootPath}signin-credential-exchange-service`,
   CHAT: `${rootPath}rooms`
 };

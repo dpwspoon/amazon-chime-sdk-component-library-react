@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import {
   FormField,
   Input,
-  Flex,
   Button,
   Heading,
 } from 'amazon-chime-sdk-component-library-react';
@@ -36,13 +35,7 @@ const LoginWithCognito = (props) => {
   };
 
   return (
-    <Flex className="signin-container" layout="stack">
-      <Heading
-        css="font-size: 1.1875rem !important; line-height: 4rem !important;"
-        level="1"
-      >
-        Sign in with Cognito
-      </Heading>
+    <div>
       <Heading
         css="font-size: 0.875rem !important; line-height: 3rem !important;"
         level="2"
@@ -79,7 +72,7 @@ const LoginWithCognito = (props) => {
           <Button onClick={onRegister} label="Register" variant="secondary" />
         </div>
       </form>
-    </Flex>
+    </div>
   );
 };
 
