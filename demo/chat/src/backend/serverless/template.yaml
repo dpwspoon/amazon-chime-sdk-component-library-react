@@ -530,18 +530,19 @@ Resources:
          const APP_INSTANCE_ID = process.env.ChimeAppInstanceArn;
          const USER_ROLE_ARN = process.env.UserRoleArn;
 
-         // STEP 1: Validate your identity providers access token and return user information
-         // including UUID, and optionally username or additional metadata
-         function validateAuthTokenOrCredsAndReturnUser(authToken) {
-           // For demo purposes this returns an anonymous user.  In production code place
-           // your logic to validate your auth token in this method
-           const randomUserID = `anon_${uuidv4()}`;
-           return {
-             uuid: randomUserID,
-             displayName: randomUserID,
-             metadata: null
-           };
-         }
+        // STEP 1: Validate your identity providers access token and return user information
+        // including UUID, and optionally username or additional metadata
+        function validateAccessTokenOrCredsAndReturnUser(identityToken) {
+          // For purposes of simulating the exchange, this function defaults to returning anonymous user access.
+          // To authenticate known users add logic to validate your auth token here.  The function
+          // will need to return the users uuid and optionally display name and/or other metadata
+          const randomUserID = `anon_${uuidv4()}`;
+          return {
+            uuid: randomUserID,
+            displayName: randomUserID,
+            metadata: null
+          };
+        }
 
          // STEP 2: get AWS Creds by calling assumeRole with the user info returned
          // in step one.
@@ -581,7 +582,7 @@ Resources:
            let creds = null;
 
            try {
-             const user = validateAuthTokenOrCredsAndReturnUser(authToken);
+             const user = validateAccessTokenOrCredsAndReturnUser(authToken);
 
              if (user !== null) {
                creds = await assumeRole(user);

@@ -17,25 +17,12 @@ This doc is intended for developers interested in the Amazon Chime Chat SDK, eve
     ```aws --version```
 2. Obtain AWS credentials for your AWS account
 3. Set the AWS credentials in the AWS CLI - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.
-4. (Optional) The demo allows login via both Cognito OR a credential exchange service.  If you prefer not to use Cognito, then for demo purposes
-the credential exchange service uses [HTTP Basic Auth](https://tools.ietf.org/html/rfc7617) (username password) with hardcoded
-credentials in the lambda mapping. In production these credentials would be validated from your IDP.  If you would like to
-customize the usernames or passwords open [src/backend/serverless/template.yaml](./src/backend/serverless/template.yaml) and edit the following;
-where the format is `username:password` mapped to `new User(${User_UUID}. ${User_Display_Name}`:
-
-```
- // TODO: Optionally modify user name and passwords that are hardcoded for demo purposes.  In production remove this code with your 
- // own credential validation
- const validUsers = {
-   'william@example.com:changeit1': new User('uuid123', 'bill'),
-   'fran@example.com:changeit2': new User('uuidABC', 'fran')
-```
-5. Deploy included Cloudformation template via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
+4. Deploy included Cloudformation template via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
     
     or
     
     ```aws cloudformation create-stack --stack-name <STACKNAME> --template-body file://src/backend/serverless/template.yaml --parameters ParameterKey=DemoName,ParameterValue=<NAME_OF_DEMO> --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND```
-6. Verify and record outputs via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
+5. Verify and record outputs via [Cloudformation Console](https://aws.amazon.com/cloudformation/)
     
     or
 
@@ -51,11 +38,10 @@ where the format is `username:password` mapped to `new User(${User_UUID}. ${User
  previously created resources.
 6. In the root directory `demo/chat`, run `npm start` to start the client
 7. Open https://0.0.0.0:9000/ in your browser
-8. By default, the demo uses Amazon Cognito User Pools to manage users.  Alternatively, you can run a small lambda that exchanges your IDPs
- tokens or custom credentials for AWS Chime credentials scoped to individual users.  If you prefer to use the default Cognito flow
+8. By default the demo uses Amazon Cognito User Pools to manage users and login.  Alternatively, you can get credentials through a small 
+ lambda service that the cloudformation template setup.  If you prefer to use the default Cognito flow
  continue with [Cognito User Pools - Register a New User](#cognito-user-pools-register-a-new-user).  If you prefer to use the credential 
- exchange service set `useCredentialExchangeService` to `true` in `src/Config.js`.  Your browser should reload and skip ahead to
- [Credential Exchange Service: Login](#Credential-Exchange-Service-Login).
+ exchange service set see [Credential Exchange Service: Login](#Credential-Exchange-Service-Login).
 
 #### Cognito User Pools: Register a New User
 
@@ -87,19 +73,27 @@ Skip ahead to [Creating a Channel](#creating-a-channel)
 #### Credential Exchange Service: Login
 
 1. Open a browser of your choice and navigate to [http://localhost:9000](http://localhost:9000/) to access the client
-2. Login by provide a username and password that matches one of the hardcoded user names and passwords in
- [src/backend/serverless/template.yaml](./src/backend/serverless/template.yaml).  If you did not modify this from the above steps, a
- username would be `fran@example.com` and password would be `changeit2`.
+2. Change the drop down to Credential Exchange Service
+3. The Credential Exchange Service is a small lambda running behind API gateway that enables exchanging your applications or identity 
+provider's (IDP) token for AWS credentials.  To simulate the processes of exchanging credentials by default the lambda returns anonymous access
+regardless of the token provided.  Click "Exchange Token for AWS Credentials" to get anonymous access to the chat application.  If you
+wish to change the code to validate your application/IDP token, modify the following code in /backend/template.yml.
 
 ```
- // TODO: Optionally modify user name and passwords that are hardcoded for demo purposes.  In production remove this code with your 
- // own credential validation
- const validUsers = {
-   'william@example.com:changeit1': new User('uuid123', 'bill'),
-   'fran@example.com:changeit2': new User('uuidABC', 'fran')
+ // STEP 1: Validate your identity providers access token and return user information
+ // including UUID, and optionally username or additional metadata
+ function validateAccessTokenOrCredsAndReturnUser(identityToken) {
+   // For purposes of simulating the exchange, this function defaults to returning anonymous user access.
+   // To authenticate known users add logic to validate your auth token here.  The function
+   // will need to return the users uuid and optionally display name and/or other metadata
+   const randomUserID = `anon_${uuidv4()}`;
+   return {
+     uuid: randomUserID,
+     displayName: randomUserID,
+     metadata: null
+   };
+ }
 ```
-
-3. Choose Login
 
 ### Creating a Channel
 
