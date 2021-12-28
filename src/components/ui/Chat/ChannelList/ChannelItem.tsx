@@ -26,10 +26,12 @@ export interface ChannelItemProps
   unread?: boolean;
   /** Content of the badge signaling unread messages, such as a badge displaying the number. */
   unreadBadgeLabel?: string;
+  /** First message of channel for view in UI next to name if present */
+  firstMessageContentText?: string;
 }
 
 export const ChannelItem: FC<ChannelItemProps> = (props) => {
-  const { name, actions, isSelected, onClick, unread, unreadBadgeLabel } =
+  const { name, actions, isSelected, onClick, unread, unreadBadgeLabel, firstMessageContentText } =
     props;
   return (
     <StyledChannelItem
@@ -39,6 +41,9 @@ export const ChannelItem: FC<ChannelItemProps> = (props) => {
       <Button className="ch-channel-button" label={name} onClick={onClick} />
       {unread && unreadBadgeLabel && (
         <Badge value={unreadBadgeLabel} className="ch-unread-badge" />
+      )}
+      {firstMessageContentText && (
+        <Badge value={firstMessageContentText} className="ch-first-message-badge" />
       )}
       {actions && isSelected && (
         <PopOver

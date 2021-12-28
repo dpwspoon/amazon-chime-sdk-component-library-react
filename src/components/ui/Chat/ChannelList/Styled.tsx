@@ -61,9 +61,18 @@ export const StyledChannelItem = styled.li<ChannelItemProps>`
     left: 5px;
     background-color: ${(props) => props.theme.colors.primary.light};
   }
-
+  
   &.ch-unread .ch-channel-button {
     font-weight: bold;
+  }
+
+  & .ch-first-message-badge {
+    display: ${(props) => (props.firstMessageContentText ? 'inline' : 'none')};
+    position: absolute;
+    z-index: 2;
+    top: 12px;
+    left: 5px;
+    background-color: ${(props) => props.theme.colors.primary.light};
   }
 
   &.ch-selected .ch-channel-button {
